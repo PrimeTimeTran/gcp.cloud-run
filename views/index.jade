@@ -1,9 +1,9 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1= "CI/CD with Github Actions, Docker, GCP Cloud Run"
+  p Welcome to CI/CD with Github Actions, Docker, GCP Cloud Run
 
   p
     | The commit that produced this build is 
-    a(href=commitLink)= commitLink
+    a(href=commitLink)= sha

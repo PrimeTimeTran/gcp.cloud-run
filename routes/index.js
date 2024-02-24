@@ -3,7 +3,11 @@ var router = express.Router()
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'CI/CD with Github Actions, Docker, GCP Cloud Run' })
+  const resp = {
+
+
+  }
+  res.render('index', resp)
 })
 
 module.exports = router

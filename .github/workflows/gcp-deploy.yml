@@ -40,8 +40,9 @@ jobs:
       - name: Add commit link/hash
         run: |
           echo "Commit sha: ${{github.sha }}"
+          sed -i "7s|.*|    sha: '${{ github.sha }}',|" routes/index.js
+          sed -i "8s|.*|    commitLink: '${{ github.event.repository.html_url }}/commit/${{ github.sha }}',|" routes/index.js
 
-          sed "6s/.*/res.render('index', { title: 'CI\/CD with Github Actions, Docker, GCP Cloud Run', commitLink: '${{ github.event.repository.html_url }}/commit/${{ github.sha }}' })/" routes/index.js > routes/index_temp.js && mv routes/index_temp.js routes/index.js
           cat routes/index.js
 
       - name: Build Docker image
