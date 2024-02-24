@@ -9,3 +9,5 @@ spec:
     spec:
       containers:
         - image: docker.io/primetimetran/gcp-cloud-run-example:latest
+          ports:
+            - containerPort: 3000
