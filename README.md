@@ -70,6 +70,6 @@ gcloud run services replace service.yaml
 ## Bonus
 Update index file using a step in the jobs action which updates the response to include a url to the commit which triggered the workflow.
 
-```
+```sh
 sed "6s/.*/res.render('index', { title: 'CI\/CD with Github Actions, Docker, GCP Cloud Run', commitLink: 'YOUR_COMMIT_URL' })/" routes/index.js > routes/index_temp.js && mv routes/index_temp.js routes/index.js
 ```
