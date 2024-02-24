@@ -1,0 +1,61 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - uses: eriknyk/increment-variable-action@v1.0.0
+        with:
+          name: VERSION_CODE
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+
+      - name: Set app info
+        run: |
+          echo "APP_VERSION=${{ steps.version_code.outputs.new_value }}" >> $GITHUB_ENV
+          echo "PREV_VERSION=${{ steps.version_code.outputs.old_value }}" >> $GITHUB_ENV
+
+      - name: Debug secret value
+        run: |
+          echo "VERSION: ${{ vars.VERSION_CODE }}"
+
+      - name: Build Docker image
+        run: docker build -t primetimetran/gcp-cloud-run-example:${{ vars.VERSION_CODE }} . --platform linux/amd64
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker image to Docker Hub
+        run: docker push primetimetran/gcp-cloud-run-example:${{ vars.VERSION_CODE }}
+
+      - name: Fetch latest Docker image tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(curl -s "https://hub.docker.com/v2/repositories/primetimetran/gcp-cloud-run-example/tags/" | jq -r '.results | .[].name' | grep -v "latest" | sort -V | tail -n 1)
+          echo "::set-output name=latest_tag::$latest_tag"
+
+      - name: Update service YAML with latest tag
+        run: |
+          sed -i "s|docker.io/primetimetran/gcp-cloud-run-example:latest|docker.io/primetimetran/gcp-cloud-run-example:${{ vars.VERSION_CODE }}|g" service.yaml
+
+      - name: Deploy to Cloud Run
+        run: gcloud run services replace service.yaml --project turboship-dev
