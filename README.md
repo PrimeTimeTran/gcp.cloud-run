@@ -1,4 +1,6 @@
 # GCP Cloud Run Service Deploy
+![Demo](./demo.gif)
+
 Deploy a service to GCP Cloud Run using the CLI or a Github repo. 
 
 Deploy a revision of a GCP service on push to a Github repo.
@@ -38,7 +40,3 @@ gcloud run services replace service.yaml
 ## Resources
 
 - [GCP Cloud Run Docs](https://cloud.google.com/run/docs/deploying#service)
-- []() 
-- []() 
-- []() 
-- []() 
