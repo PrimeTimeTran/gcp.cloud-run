@@ -3,3 +3,7 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+
+  p
+    | The commit that produced this build is 
+    a(href=commitLink)= commitLink

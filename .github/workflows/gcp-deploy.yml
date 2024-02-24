@@ -35,6 +35,15 @@ jobs:
         run: |
           echo "VERSION: ${{ vars.VERSION_CODE }}"
 
+      - name: Update index.js
+        run: |
+          # Append the line to index.js
+          echo "res.render('index', { title: 'CI/CD with Github Actions, Docker, GCP Cloud Run' });" >> ./routes/index.js
+
+          # Add commit link to options/params object
+          echo "Commit sha: ${{github.sha }}"
+          sed -i "s/{ *title: 'CI/CD with Github Actions, Docker, GCP Cloud Run' *}/{ title: 'CI/CD with Github Actions, Docker, GCP Cloud Run', commitLink: '${{ github.event.repository.html_url }}/commit/${{ github.sha }}' }/" ./routes/index.js
+
       - name: Build Docker image
         run: docker build -t primetimetran/gcp-cloud-run-example:${{ vars.VERSION_CODE }} . --platform linux/amd64
 
